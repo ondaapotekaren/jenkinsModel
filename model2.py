@@ -73,11 +73,13 @@ for x in range(nmbrOfTests):
 			# add job from queue to a node,first available executor
 
 			temp = int(queue.pop(0))
+
 			for i in range(len(nodeList[curNode][0])):
 				if nodeList[curNode][0][i] == 0:
 					nodeList[curNode][0][i] = temp
 					#nodeList[curNode][1][i] += temp
 
+					# counts as heavy job -> True
 					if temp > 300:  
 						job = (temp,True)
 
