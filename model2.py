@@ -5,7 +5,12 @@ import sys
 
 #accList = [0] * executors
 
-#queue = [1,3,4,5,6,5,9,4,5,2,3]
+queue = [2,2,2,2,1,1,1,1,1]
+
+## LJF, SJF. Just sort the queue asc or des
+
+## To add aging: Split the queue sort them separately, then join them.
+
 
 nmbrOfTests = int(sys.argv[1])
 
@@ -25,13 +30,13 @@ for x in range(nmbrOfTests):
 
 	nodes = 2
 	nodeList = []
-	executors = 10
+	executors = 2
 
 
 	# (currently running,accumulated time)
 
 	for i in range(nodes):
-		nodeList.append(([0]*executors,[0]*executors))
+		nodeList.append(([0]*executors,[[] for _ in range(executors)]))
 
 	while len(queue) > 0:
 
@@ -71,7 +76,16 @@ for x in range(nmbrOfTests):
 			for i in range(len(nodeList[curNode][0])):
 				if nodeList[curNode][0][i] == 0:
 					nodeList[curNode][0][i] = temp
-					nodeList[curNode][1][i] += temp
+					#nodeList[curNode][1][i] += temp
+
+					if temp > 300:  
+						job = (temp,True)
+
+					else:
+						job = (temp,False)
+
+					nodeList[curNode][1][i].append(job)
+					#print("break with job: " + str(temp))
 					break
 
 			
@@ -87,12 +101,73 @@ for x in range(nmbrOfTests):
 
 	#print(nodeList)
 
-	curMax = 0
-	for i in nodeList:
-		x = max(i[1])
-		if x > curMax:
-			curMax = x
+	#curMax = 0
+	#for i in nodeList:
+	#	x = max(i[1])
+	#	if x > curMax:
+	#		curMax = x
 
-	makespan += curMax
+	#makespan += curMax
 
-print("Makespan: "+str(float(makespan)/nmbrOfTests))
+	#print("Makespan: "+str(float(makespan)/nmbrOfTests))
+	#print(str(nodeList[0][1][0]) + '\n')
+	#print(str(nodeList[1][1][0]) + '\n')
+	#print(str(nodeList[0][1][1]) + '\n')
+	#print(str(nodeList[1][1][1]) + '\n')
+	#print(len(nodeList[0][1][0]))
+	#print(len(nodeList[1][1][0]))
+
+	#print(nodeList)
+	#print(len(nodeList))
+
+
+
+	# ---- Calculate the makespan, after assignmnet----
+
+
+	nodeMakespans = [0] * nodes
+
+	slowdowns = [1,1.3,1.5]
+
+	i = 0
+	for node in nodeList:
+		timeLeft = True
+
+		while timeLeft:
+			
+			timeLeft = False
+			heavyJobs = 0
+
+			for executor in node[1]:
+				if executor != []:
+
+					timeLeft = True
+					
+					#print("exec " + str(executor))
+
+					job = executor[0]
+
+					if job[1]:
+						heavyJobs += 1
+
+					time = job[0] - 1
+					executor[0] = (time,job[1])
+
+			if timeLeft:
+				nodeMakespans[i] += 1*slowdowns[heavyJobs]
+			
+
+
+			#remove all finished jobs
+
+			for executor in node[1]:
+				if executor != []:
+					jobTime = executor[0][0]
+					if jobTime < 1:
+						executor.pop(0)
+		i += 1
+			#if allFree:
+			#	break
+	makespan += max(nodeMakespans)
+
+print("makespan " + str(float(makespan)/nmbrOfTests))
