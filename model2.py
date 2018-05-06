@@ -18,19 +18,23 @@ makespan = 0
 
 for x in range(nmbrOfTests):
 
-	s =  (numpy.random.pareto(2,100) + 1)
+	s =  (numpy.random.pareto(2,250) + 1)
 
 	queue = []
 
 	for i in s:
 		queue.append(int(i*100))
 
+	# LJF 
+	queue = sorted(queue)
+	queue.reverse()
+
 	#print("The queue: " + str(queue)+'\n') 
 	#print("max entry in queue: " + str(max(queue))+'\n')
 
-	nodes = 2
+	nodes = 5
 	nodeList = []
-	executors = 2
+	executors = 10
 
 
 	# (currently running,accumulated time)
@@ -80,7 +84,7 @@ for x in range(nmbrOfTests):
 					#nodeList[curNode][1][i] += temp
 
 					# counts as heavy job -> True
-					if temp > 300:  
+					if temp > 1000:  
 						job = (temp,True)
 
 					else:
@@ -101,35 +105,12 @@ for x in range(nmbrOfTests):
 						nodeList[i][0][ii] -= 1
 
 
-	#print(nodeList)
-
-	#curMax = 0
-	#for i in nodeList:
-	#	x = max(i[1])
-	#	if x > curMax:
-	#		curMax = x
-
-	#makespan += curMax
-
-	#print("Makespan: "+str(float(makespan)/nmbrOfTests))
-	#print(str(nodeList[0][1][0]) + '\n')
-	#print(str(nodeList[1][1][0]) + '\n')
-	#print(str(nodeList[0][1][1]) + '\n')
-	#print(str(nodeList[1][1][1]) + '\n')
-	#print(len(nodeList[0][1][0]))
-	#print(len(nodeList[1][1][0]))
-
-	#print(nodeList)
-	#print(len(nodeList))
-
-
-
 	# ---- Calculate the makespan, after assignmnet----
 
 
 	nodeMakespans = [0] * nodes
 
-	slowdowns = [1,1.3,1.5]
+	slowdowns = [1,1,1.1,1.2,1.3,1.4,1.5,1.8,1.9,2,2.1]
 
 	i = 0
 	for node in nodeList:
